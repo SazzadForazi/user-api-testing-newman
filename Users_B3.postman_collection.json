@@ -1,0 +1,594 @@
+{
+	"info": {
+		"_postman_id": "91cde599-0a1b-43ff-8bb1-58ec75cffdb7",
+		"name": "Users_B3",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "User Login",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var jsonData = pm.response.json();\r",
+							"pm.collectionVariables.set(\"token\",jsonData.token)\r",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"email\":\"salmansrabon@gmail.com\",\r\n    \"password\":\"1234\"\r\n}\r\n",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseUrl}}/user/login",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"user",
+						"login"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "User list",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "{{token}}",
+						"type": "text"
+					},
+					{
+						"key": "X-AUTH-SECRET-KEY",
+						"value": "{{partner-key}}",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{baseUrl}}/user/list",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"user",
+						"list"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "User search",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "{{token}}",
+						"type": "text"
+					},
+					{
+						"key": "X-AUTH-SECRET-KEY",
+						"value": "{{partner-key}}",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{baseUrl}}/user/search?email=salmansrabon@gmail.com",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"user",
+						"search"
+					],
+					"query": [
+						{
+							"key": "email",
+							"value": "salmansrabon@gmail.com"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Create New User",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Check if new user is created\", function () {\r",
+							"    var jsonData = pm.response.json();\r",
+							"    pm.expect(jsonData.message).include(\"User created\");\r",
+							"});\r",
+							"pm.test(\"Status code is 201\", function () {\r",
+							"    pm.response.to.have.status(201);\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"var nid = _.random(10000000, 99999999)\r",
+							"\r",
+							"const reqObject = {\r",
+							"    url: 'https://randomuser.me/api/',\r",
+							"    method: 'GET',\r",
+							"    header: 'Content-Type:application/json'\r",
+							"};\r",
+							"pm.sendRequest(reqObject, (err, res) => {\r",
+							"    let { results } = res.json()\r",
+							"    let name = results[0].name.first + \" \" + results[0].name.last;\r",
+							"    let email = results[0].email;\r",
+							"    let phone_number = results[0].phone;\r",
+							"    let address = results[0].location.city + \",\" + results[0].location.country\r",
+							"    pm.collectionVariables.set(\"name\", name);\r",
+							"    pm.collectionVariables.set(\"email\", email);\r",
+							"    pm.collectionVariables.set(\"phone_number\", phone_number);\r",
+							"    pm.collectionVariables.set(\"address\", address);\r",
+							"    pm.collectionVariables.set(\"nid\", nid)\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "{{token}}",
+						"type": "text"
+					},
+					{
+						"key": "X-AUTH-SECRET-KEY",
+						"value": "{{partner-key}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"name\":\"{{name}}\",\r\n    \"email\":\"{{email}}\",\r\n    \"password\":\"12345678\",\r\n    \"phone_number\":\"{{phone_number}}\",\r\n    \"nid\":\"{{nid}}\",\r\n    \"role\":\"Customer\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseUrl}}/user/create",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"user",
+						"create"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Create random new user",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Check if new user is created\", function () {\r",
+							"    var jsonData = pm.response.json();\r",
+							"    pm.expect(jsonData.message).include(\"User created\");\r",
+							"});\r",
+							"pm.test(\"Status code is 201\", function () {\r",
+							"    pm.response.to.have.status(201);\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"var nid = _.random(10000000, 99999999)\r",
+							"var randomid=_.random(1000,9999);\r",
+							"var email=`userb3${randomid}@grr.la`\r",
+							"// var email=\"userb3\"+randomid+\"@grr.la\"\r",
+							"pm.collectionVariables.set(\"nid\", nid)\r",
+							"pm.collectionVariables.set(\"email\",email)\r",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "{{token}}",
+						"type": "text"
+					},
+					{
+						"key": "X-AUTH-SECRET-KEY",
+						"value": "{{partner-key}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"name\":\"{{$randomFirstName}} {{$randomLastName}} {{$randomFullName}}\",\r\n    \"email\":\"{{email}}\",\r\n    \"password\":\"12345678\",\r\n    \"phone_number\":\"{{$randomPhoneNumber}}\",\r\n    \"nid\":\"{{nid}}\",\r\n    \"role\":\"Customer\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseUrl}}/user/create",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"user",
+						"create"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Duplicate User",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Check if user is already exists\", function () {\r",
+							"    var jsonData = pm.response.json();\r",
+							"    pm.expect(jsonData.message).contains(\"User already exists\");\r",
+							"});\r",
+							"pm.test(\"Status code is 208\", function () {\r",
+							"    pm.response.to.have.status(208);\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "{{token}}",
+						"type": "text"
+					},
+					{
+						"key": "X-AUTH-SECRET-KEY",
+						"value": "{{partner-key}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"name\":\"User 1 Batch3\",\r\n    \"email\":\"user1b3@grr.la\",\r\n    \"password\":\"12345678\",\r\n    \"phone_number\":\"01502212147\",\r\n    \"nid\":\"987894562\",\r\n    \"role\":\"Customer\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseUrl}}/user/create",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"user",
+						"create"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Update User",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Check if user is updated\", function () {\r",
+							"    var jsonData = pm.response.json();\r",
+							"    pm.expect(jsonData.message).contains(\"User updated successfully\");\r",
+							"});\r",
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "{{token}}",
+						"type": "text"
+					},
+					{
+						"key": "X-AUTH-SECRET-KEY",
+						"value": "{{partner-key}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"name\":\"Clarisse Lopez\",\r\n    \"email\":\"clarisse.lopez@example.com\",\r\n    \"password\":\"1234\",\r\n    \"phone_number\":\"03-85-28-36-94\",\r\n    \"nid\":\"77528713\",\r\n    \"role\":\"Customer\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseUrl}}/user/update/254",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"user",
+						"update",
+						"254"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Update User partially",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Check if user is updated\", function () {\r",
+							"    var jsonData = pm.response.json();\r",
+							"    pm.expect(jsonData.message).contains(\"User updated successfully\");\r",
+							"});\r",
+							"pm.test(\"Check if user mail is updated as Salman \", function () {\r",
+							"    var jsonData = pm.response.json();\r",
+							"    pm.expect(jsonData.user.email).contains(\"salman@grr.la\");\r",
+							"});\r",
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "PATCH",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "{{token}}",
+						"type": "text"
+					},
+					{
+						"key": "X-AUTH-SECRET-KEY",
+						"value": "{{partner-key}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"email\":\"salman@grr.la\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseUrl}}/user/update/254",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"user",
+						"update",
+						"254"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Save the last user id",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var jsonData = pm.response.json();\r",
+							"// let user=jsonData.users[jsonData.count-1]\r",
+							"// let user = jsonData.users[_.random(1, (jsonData.users.length - 1))]\r",
+							"let user = jsonData.users[jsonData.users.length - 1]\r",
+							"console.log(user.id)\r",
+							"pm.collectionVariables.set(\"id\", user.id)"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "{{token}}",
+						"type": "text"
+					},
+					{
+						"key": "X-AUTH-SECRET-KEY",
+						"value": "{{partner-key}}",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{baseUrl}}/user/list",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"user",
+						"list"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Delete User",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Check if User deleted successfully\", function () {\r",
+							"    var jsonData = pm.response.json();\r",
+							"    pm.expect(jsonData.message).contains(\"User deleted\");\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "DELETE",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "{{token}}",
+						"type": "text"
+					},
+					{
+						"key": "X-AUTH-SECRET-KEY",
+						"value": "{{partner-key}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseUrl}}/user/delete/{{id}}",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"user",
+						"delete",
+						"{{id}}"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "token",
+			"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InNhbG1hbnNyYWJvbkBnbWFpbC5jb20iLCJwYXNzd29yZCI6IjEyMzQiLCJpYXQiOjE2NDcyNzM1NDAsImV4cCI6MTY0NzI3NTM0MH0.xWBx-1k1glN-JV1TdI7DcoGyhizXom7-2DLBNqqcHSI"
+		},
+		{
+			"key": "partner-key",
+			"value": "ROADTOSDET",
+			"type": "string"
+		},
+		{
+			"key": "name",
+			"value": "Molly Wolden"
+		},
+		{
+			"key": "email",
+			"value": "userb38931@grr.la"
+		},
+		{
+			"key": "phone_number",
+			"value": "53292068"
+		},
+		{
+			"key": "address",
+			"value": "Frommereid,Norway"
+		},
+		{
+			"key": "nid",
+			"value": 35874287
+		},
+		{
+			"key": "id",
+			"value": 265
+		},
+		{
+			"key": "baseUrl",
+			"value": "http://dmoney.professionaltrainingbd.com",
+			"type": "string"
+		}
+	]
+}
